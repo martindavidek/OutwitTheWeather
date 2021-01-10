@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Outwit The Weather</string>
+    <string name="celsius_degree">\u0020°C</string>
+    <string name="show_week_forecast">SHOW WEEK FORECAST</string>
+    <string name="find_forecast_for_city">FIND FORECAST FOR CITY</string>
+    <string name="current_weather">CURRENT WEATHER</string>
+    <string name="actual_weather_at_your_actual_location">at your actual location</string>
+    <string name="feels_like">Feels Like:\u0020</string>
+    <string name="requested">Requested:</string>
+    <string name="sunrise">Sunrise:</string>
+    <string name="sunset">Sunset:</string>
+    <string name="wind_speed">Wind speed:</string>
+    <string name="pressure">Pressure:</string>
+    <string name="humidity">Humidity:</string>
+    <string name="speed_units">\u0020m/s</string>
+    <string name="pressure_units">hPa</string>
+    <string name="percent_sign">%</string>
+    <string name="go_back">GO BACK</string>
+    <string name="min">Minimum:</string>
+    <string name="max">Maximum:</string>
+    <string name="weekly_forecast">WEEKLY FORECAST</string>
+    <string name="for_requested_city">for requested city</string>
+    <string name="show_forecast">SHOW FORECAST</string>
+    <string name="insert_city_name">Insert city name</string>
+    <string name="city_name">City name</string>
+</resources>

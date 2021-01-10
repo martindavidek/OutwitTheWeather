@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_second"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cz.uhk.fim.outwittheweather.app.SecondActivity"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/second_button"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dip"
+        android:layout_marginTop="1dip"
+        android:layout_marginEnd="1dip"
+        android:layout_marginBottom="1dip"
+        android:background="@android:color/background_dark"
+        android:text="@string/go_back"/>
+
+    <TextView
+        android:id="@+id/second_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/weekly_forecast"
+        android:textAlignment="center"
+        android:textColor="@android:color/background_dark"
+        android:textSize="40sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/second_subheader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/actual_weather_at_your_actual_location"
+        android:textAlignment="center"
+        android:textColor="@android:color/background_dark"
+        android:textSize="20sp"
+        android:textStyle="italic" />
+
+    <ListView
+        android:id="@+id/second_idListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </ListView>
+
+</LinearLayout>
