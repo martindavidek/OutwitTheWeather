@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ import org.json.JSONObject;
 
 import java.util.Locale;
 
+import cz.uhk.fim.outwittheweather.mock.CurrentWeatherDataMock;
 import cz.uhk.fim.outwittheweather.model.CurrentWeather;
 import cz.uhk.fim.outwittheweather.parser.WeatherJsonParser;
 import cz.uhk.fim.outwittheweather.utils.DateTimeConverter;
@@ -91,53 +93,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 }
             });
 
-            volleyClient.getWeatherObject(this, "CURRENT", latitude, longitude, new IVolleyCallback() {
+            CurrentWeather currentWeather = CurrentWeatherDataMock.getCurrentWeather();
+
+            showWeatherData(this, currentWeather);
+
+            /*volleyClient.getWeatherObject(this, "CURRENT", latitude, longitude, new IVolleyCallback() {
                 @Override
                 public void onSuccess(Context context, JSONObject response) {
                     try {
                         CurrentWeather currentWeather = parser.parseCurrentWeather(response);
-                        DateTimeConverter converter = new DateTimeConverter();
+                        //CurrentWeather currentWeather = CurrentWeatherDataMock.getCurrentWeather();
 
-                        String icon = currentWeather.getWeather().getIcon();
-
-                        if (icon != null) {
-                            ImageView imageView = (ImageView) findViewById(R.id.main_icon);
-                            Glide.with(context)
-                                    .load("https://openweathermap.org/img/wn/" + icon + "@2x.png")
-                                    .apply(new RequestOptions().override(400, 400))
-                                    .into(imageView);
-                        }
-
-                        TextView weatherView = (TextView) findViewById(R.id.main_weather);
-                        weatherView.setText(currentWeather.getWeather().getMain());
-
-                        TextView weatherDescriptionView = (TextView) findViewById(R.id.main_weather_desc);
-                        weatherDescriptionView.setText(currentWeather.getWeather().getDescription());
-
-                        TextView tempView = (TextView) findViewById(R.id.main_temp);
-                        tempView.setText(String.format(Locale.ENGLISH, "%.1f%s", currentWeather.getTemp(), getString(R.string.celsius_degree)));
-
-                        TextView feelsLikeView = (TextView) findViewById(R.id.main_feels_like);
-                        feelsLikeView.setText(String.format(Locale.ENGLISH, "%s%.1f%s", getString(R.string.feels_like), currentWeather.getFeelsLike(), getString(R.string.celsius_degree)));
-
-                        TextView dtView = (TextView) findViewById(R.id.main_dt_value);
-                        dtView.setText(converter.getTimeStamp(currentWeather.getDt()));
-
-                        TextView sunriseView = (TextView) findViewById(R.id.main_sunrise_value);
-                        sunriseView.setText(converter.getTimeStamp(currentWeather.getSunrise()));
-
-                        TextView sunsetView = (TextView) findViewById(R.id.main_sunset_value);
-                        sunsetView.setText(converter.getTimeStamp(currentWeather.getSunset()));
-
-                        TextView windSpeedView = (TextView) findViewById(R.id.main_wind_speed_value);
-                        windSpeedView.setText(String.format(Locale.ENGLISH, "%.1f%s", currentWeather.getWindSpeed(), getString(R.string.speed_units)));
-
-                        TextView pressureView = (TextView) findViewById(R.id.main_pressure_value);
-                        pressureView.setText(String.format(Locale.ENGLISH, "%d %s", currentWeather.getPressure(), getString(R.string.pressure_units)));
-
-                        TextView humidityView = (TextView) findViewById(R.id.main_humidity_value);
-                        humidityView.setText(String.format(Locale.ENGLISH, "%d %s", currentWeather.getHumidity(), getString(R.string.percent_sign)));
-
+                        showWeatherData(context, currentWeather);
                     } catch (JSONException e) {
                         Log.e(TAG, "Current weather parsing error: " + e.getLocalizedMessage());
                         e.printStackTrace();
@@ -149,11 +116,58 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     Toast.makeText(getBaseContext(), "An error occurred. Please try again later.", Toast.LENGTH_LONG).show();
                     Log.e(TAG, "Volley error: " + error.getLocalizedMessage());
                 }
-            });
+            });*/
         } else {
             requestLocationPermission();
         }
 
+    }
+
+    private void showWeatherData(Context context, CurrentWeather currentWeather) {
+        DateTimeConverter converter = new DateTimeConverter();
+
+        TextView weatherView = (TextView) findViewById(R.id.main_weather);
+        weatherView.setText(currentWeather.getWeather().getMain());
+
+        TextView weatherDescriptionView = (TextView) findViewById(R.id.main_weather_desc);
+        weatherDescriptionView.setText(currentWeather.getWeather().getDescription());
+
+        TextView tempView = (TextView) findViewById(R.id.main_temp);
+        tempView.setText(String.format(Locale.ENGLISH, "%.1f%s", currentWeather.getTemp(), getString(R.string.celsius_degree)));
+
+        TextView feelsLikeView = (TextView) findViewById(R.id.main_feels_like);
+        feelsLikeView.setText(String.format(Locale.ENGLISH, "%s%.1f%s", getString(R.string.feels_like), currentWeather.getFeelsLike(), getString(R.string.celsius_degree)));
+
+        TextView dtView = (TextView) findViewById(R.id.main_dt_value);
+        dtView.setText(converter.getTimeStamp(currentWeather.getDt()));
+
+        TextView sunriseView = (TextView) findViewById(R.id.main_sunrise_value);
+        sunriseView.setText(converter.getTimeStamp(currentWeather.getSunrise()));
+
+        TextView sunsetView = (TextView) findViewById(R.id.main_sunset_value);
+        sunsetView.setText(converter.getTimeStamp(currentWeather.getSunset()));
+
+        TextView windSpeedView = (TextView) findViewById(R.id.main_wind_speed_value);
+        windSpeedView.setText(String.format(Locale.ENGLISH, "%.1f%s", currentWeather.getWindSpeed(), getString(R.string.speed_units)));
+
+        TextView pressureView = (TextView) findViewById(R.id.main_pressure_value);
+        pressureView.setText(String.format(Locale.ENGLISH, "%d %s", currentWeather.getPressure(), getString(R.string.pressure_units)));
+
+        TextView humidityView = (TextView) findViewById(R.id.main_humidity_value);
+        humidityView.setText(String.format(Locale.ENGLISH, "%d %s", currentWeather.getHumidity(), getString(R.string.percent_sign)));
+
+        String icon = currentWeather.getWeather().getIcon();
+
+        if (icon != null) {
+            ImageView imageView = (ImageView) findViewById(R.id.main_icon);
+            Glide.with(context)
+                    .load("https://openweathermap.org/img/wn/" + icon + "@2x.png")
+                    .apply(new RequestOptions().override(400, 400))
+                    .into(imageView);
+            ProgressBar progressBar = (ProgressBar) findViewById(R.id.forecast_loading);
+            progressBar.setVisibility(View.GONE);
+            imageView.setVisibility(View.VISIBLE);
+        }
     }
 
     protected void onResume() {

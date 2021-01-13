@@ -77,7 +77,15 @@
                 android:id="@+id/main_icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"
+                android:visibility="gone"/>
+
+            <ProgressBar
+                android:id="@+id/forecast_loading"
+                style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:progressTint="#FF0000" />
 
             <TextView
                 android:id="@+id/main_weather"
