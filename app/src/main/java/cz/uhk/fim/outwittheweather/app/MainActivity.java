@@ -1,6 +1,9 @@
 package cz.uhk.fim.outwittheweather.app;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,14 +25,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
-import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Locale;
 
@@ -36,7 +38,6 @@ import cz.uhk.fim.outwittheweather.mock.CurrentWeatherDataMock;
 import cz.uhk.fim.outwittheweather.model.CurrentWeather;
 import cz.uhk.fim.outwittheweather.parser.WeatherJsonParser;
 import cz.uhk.fim.outwittheweather.utils.DateTimeConverter;
-import cz.uhk.fim.outwittheweather.volley.IVolleyCallback;
 import cz.uhk.fim.outwittheweather.volley.VolleyClient;
 import cz.uhk.fim.outwittheweather.R;
 
@@ -44,10 +45,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     private static final String TAG = "MainActivity";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 0xA1;
+    public static String CHANNEL_ID = "channel1";
 
     private VolleyClient volleyClient = new VolleyClient();
     private WeatherJsonParser parser = new WeatherJsonParser();
     private LocationManager locationManager;
+    private NotificationManagerCompat notificationManager;
 
     private double latitude;
     private double longitude;
@@ -56,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        createNotificationChannel();
+        notificationManager = NotificationManagerCompat.from(this);
 
         if (ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -95,6 +100,35 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
             CurrentWeather currentWeather = CurrentWeatherDataMock.getCurrentWeather();
 
+            String notificationText = currentWeather.getWeather().getMain()
+                    + ", "
+                    + currentWeather.getTemp()
+                    + " °C";
+
+            String notificationBigText = "Weather: "
+                    + currentWeather.getWeather().getMain()
+                    + " - "
+                    + currentWeather.getWeather().getDescription()
+                    + "\n"
+                    + "Temperature: "
+                    + currentWeather.getTemp()
+                    + " °C"
+                    + "\n"
+                    + "Feels like: "
+                    + currentWeather.getFeelsLike()
+                    + " °C";
+
+
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_otw)
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(notificationText)
+                    .setStyle(new NotificationCompat.BigTextStyle()
+                            .bigText(notificationBigText))
+                    .build();
+
+            notificationManager.notify(1, notification);
+
             showWeatherData(this, currentWeather);
 
             /*volleyClient.getWeatherObject(this, "CURRENT", latitude, longitude, new IVolleyCallback() {
@@ -117,6 +151,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     Log.e(TAG, "Volley error: " + error.getLocalizedMessage());
                 }
             });*/
+
+
         } else {
             requestLocationPermission();
         }
@@ -167,6 +203,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             ProgressBar progressBar = (ProgressBar) findViewById(R.id.forecast_loading);
             progressBar.setVisibility(View.GONE);
             imageView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Channel 1",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 
