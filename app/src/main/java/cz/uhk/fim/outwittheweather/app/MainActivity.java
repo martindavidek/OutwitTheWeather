@@ -1,13 +1,16 @@
 package cz.uhk.fim.outwittheweather.app;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -36,6 +39,7 @@ import java.util.Locale;
 
 import cz.uhk.fim.outwittheweather.mock.CurrentWeatherDataMock;
 import cz.uhk.fim.outwittheweather.model.CurrentWeather;
+import cz.uhk.fim.outwittheweather.notifications.AlertReceiver;
 import cz.uhk.fim.outwittheweather.parser.WeatherJsonParser;
 import cz.uhk.fim.outwittheweather.utils.DateTimeConverter;
 import cz.uhk.fim.outwittheweather.volley.VolleyClient;
@@ -59,8 +63,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        createNotificationChannel();
-        notificationManager = NotificationManagerCompat.from(this);
+/*        createNotificationChannel();
+        notificationManager = NotificationManagerCompat.from(this);*/
 
         if (ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -100,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
             CurrentWeather currentWeather = CurrentWeatherDataMock.getCurrentWeather();
 
-            String notificationText = currentWeather.getWeather().getMain()
+/*            String notificationText = currentWeather.getWeather().getMain()
                     + ", "
                     + currentWeather.getTemp()
                     + " °C";
@@ -120,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 
             Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setColor(Color.RED)
                     .setSmallIcon(R.drawable.ic_otw)
                     .setContentTitle(getString(R.string.app_name))
                     .setContentText(notificationText)
@@ -127,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             .bigText(notificationBigText))
                     .build();
 
-            notificationManager.notify(1, notification);
+            notificationManager.notify(1, notification);*/
 
             showWeatherData(this, currentWeather);
 
@@ -152,11 +157,27 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 }
             });*/
 
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager.getNextAlarmClock() != null) {
+                Log.d(TAG, "ALARM NEXT: " + alarmManager.getNextAlarmClock().getTriggerTime());
+                startAlarm(alarmManager.getNextAlarmClock().getTriggerTime());
+            } else {
+                Log.d(TAG, "ALARM NEXT not set");
+            }
 
         } else {
             requestLocationPermission();
         }
 
+    }
+
+    private void startAlarm(long alarmTriggerTime) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlertReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+
+        long triggerTime = alarmTriggerTime - 300000;
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
     }
 
     private void showWeatherData(Context context, CurrentWeather currentWeather) {
@@ -206,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-    private void createNotificationChannel() {
+/*    private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
@@ -216,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-    }
+    }*/
 
     protected void onResume() {
         super.onResume();
