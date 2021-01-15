@@ -168,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         } else {
             requestLocationPermission();
         }
-
     }
 
     private void startAlarm(long alarmTriggerTime) {
